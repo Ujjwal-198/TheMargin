@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { Blog } from "./blog.model";
 import { blog as blogType } from "../../types/blog";
 import { connectMongoose } from "../mongoose";
+// Import UserModel to ensure it's registered before Blog tries to use it
+import { UserModel } from "../user/user.model";
 
 export function mapBlog(blog: any): blogType {
     const authorId = blog.author?._id?.toString?.() ?? blog.author?.toString?.() ?? blog.author;
@@ -259,7 +261,9 @@ export async function getPublishedBlogsPaginated(page = 1, limit = 6) {
 
         return blogs.map(mapBlog);
     } catch (error) {
-        throw new Error("Database error");
+        const errorMsg = error instanceof Error ? error.message : "Unknown database error";
+        console.error("getPublishedBlogsPaginated error:", errorMsg);
+        throw new Error(`Database error: ${errorMsg}`);
     }
 }
 

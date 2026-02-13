@@ -1,5 +1,7 @@
 import { countPublishedBlogs, getAllBlogs, getBlogs, getPublishedBlogsPaginated } from "@/lib/blog/blog.query";
 import { NextResponse } from "next/server";
+// Ensure User model is registered
+import { UserModel } from "@/lib/user/user.model";
 
 
 export async function GET(req: Request) {
@@ -30,6 +32,8 @@ export async function GET(req: Request) {
         const result = await getAllBlogs();
         return NextResponse.json({ result });
     } catch (error) {
-        return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : "Failed to fetch blogs";
+        console.error("Blog fetch error:", errorMessage);
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
